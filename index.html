@@ -1,0 +1,62 @@
+<!doctype html><html lang="uz"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KH | Khudoyberdiev Contacts</title><link rel="icon" href="/logo.svg">
+<style>
+:root{--bg:#050b1f;--card:#0a1736;--tx:#eaf2ff;--mu:#8aa4d6;--b:#1e90ff;--ln:#17306a}
+body.light{--bg:#f2f7ff;--card:#fff;--tx:#0a1736;--mu:#4a5f8c;--ln:#cfdcf5}
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 "Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--tx)}
+header{display:flex;align-items:center;gap:12px;padding:10px 20px;border-bottom:1px solid var(--ln);flex-wrap:wrap}
+header img{width:44px;filter:drop-shadow(0 0 8px var(--b))}header b{font-size:17px}header small{color:var(--mu);display:block}
+nav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+button,input,select,textarea{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--ln);border-radius:8px;padding:8px 12px}
+button{cursor:pointer}button.p,nav button.on{background:var(--b);border-color:var(--b);color:#fff;box-shadow:0 0 12px #1e90ff88}
+main{max-width:960px;margin:20px auto;padding:0 16px}.card{background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:16px;margin-bottom:14px}
+.hero{text-align:center;padding:36px 0}.hero img{width:130px;filter:drop-shadow(0 0 22px var(--b))}.hero h1{margin:10px 0 4px;text-shadow:0 0 18px #1e90ff88}.hero p{color:var(--mu)}
+form{display:grid;gap:10px;max-width:380px;margin:auto}textarea{min-height:140px;font-family:Consolas,monospace;width:100%}
+.bar{height:10px;background:var(--ln);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--b);box-shadow:0 0 10px var(--b)}
+table{width:100%;border-collapse:collapse}td,th{padding:8px;border-bottom:1px solid var(--ln);text-align:left}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.g .card{margin:0}.g h2{margin:0;color:var(--b)}
+.err{color:#ff6b6b}.mu{color:var(--mu)}pre{white-space:pre-wrap;background:#0003;padding:8px;border-radius:8px;max-height:200px;overflow:auto}
+</style></head><body><header><img src="/logo.svg" alt="KH"><div><b>KH | KHUDOYBERDIEV CONTACTS</b><small>Learn. Code. Solve. Become a Master.</small></div><nav id="nav"></nav></header><main id="app"></main>
+<script>
+const $=s=>document.querySelector(s),app=$('#app');let me=null,tab='dash';
+const api=async(u,m='GET',b)=>{const r=await fetch('/api/'+u,{method:m,headers:{'Content-Type':'application/json','X-KH':'1'},body:b?JSON.stringify(b):undefined});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Xato');return j};
+const E=(t,a={},...k)=>{const e=document.createElement(t);for(const[x,v]of Object.entries(a))x.startsWith('on')?e[x]=v:x==='class'?e.className=v:e[x]=v;k.flat().forEach(c=>e.append(c));return e}; // textContent orqali — XSS yo'q
+const T=(t,x='')=>E(t,{textContent:x});
+function theme(){document.body.classList.toggle('light',localStorage.th==='l')}theme();
+function nav(){const n=$('#nav');n.replaceChildren();if(!me)return;
+ const tabs=[['dash','Bosh sahifa'],['tasks','Topshiriqlar'],['subs','Yechimlarim'],['lb','Reyting'],['notes','Bildirishnoma']];
+ if(me.role==='admin')tabs.push(['admin','Admin']);
+ tabs.forEach(([k,l])=>n.append(E('button',{class:tab===k?'on':'',textContent:l,onclick:()=>{tab=k;render()}})));
+ n.append(E('button',{textContent:'◐',onclick:()=>{localStorage.th=localStorage.th==='l'?'d':'l';theme()}}),E('button',{textContent:'Chiqish',onclick:async()=>{await api('logout','POST');me=null;render()}}))}
+function authView(){const reg=location.hash==='#reg',f=E('form'),err=T('div');err.className='err';
+ const fld=(n,p,t='text')=>E('input',{name:n,placeholder:p,type:t,required:true});
+ f.append(...(reg?[fld('first_name','Ism'),fld('last_name','Familiya')]:[]),fld('username','Username'),fld('password','Parol (kamida 6)','password'),...(reg?[fld('confirm','Parolni tasdiqlang','password')]:[]),
+  E('button',{class:'p',textContent:reg?'Ro\'yxatdan o\'tish':'Kirish'}),err,
+  E('a',{href:reg?'#':'#reg',textContent:reg?'Akkauntim bor':'Yangi akkaunt yaratish',onclick:()=>setTimeout(render)}),
+  T('small','Parolni unutdim: hozircha administratorga murojaat qiling.'));
+ f.onsubmit=async e=>{e.preventDefault();try{await api(reg?'register':'login','POST',Object.fromEntries(new FormData(f)));await boot()}catch(x){err.textContent=x.message}};
+ app.append(E('div',{class:'hero'},E('img',{src:'/logo.svg',alt:'KH logo'}),T('h1','KH | Khudoyberdiev Contacts'),T('p','Learn. Code. Solve. Become a Master.')),f)}
+async function dash(){const u=me;app.append(T('h2',`Xush kelibsiz, ${u.first_name}!`),
+ E('div',{class:'g'},...[['Daraja',u.rank.icon+' '+u.rank.name],['Ball',u.points],['Tasdiqlangan',u.completed],['To\'g\'ri javoblar',u.accuracy+'%']].map(([a,b])=>E('div',{class:'card'},T('small',a),T('h2',b)))),
+ E('div',{class:'card'},T('b',u.next_rank?`Keyingi daraja: ${u.next_rank.name} (${u.next_rank.min_points} ball)`:'Eng yuqori daraja!'),E('div',{class:'bar'},E('i',{style:`width:${u.progress}%`}))))}
+async function tasks(){const ts=await api('tasks');if(!ts.length)app.append(T('p','Hozircha topshiriq yo\'q.','mu'));
+ ts.forEach(t=>{const ta=E('textarea',{placeholder:'Kodingizni shu yerga yozing...'}),ln=E('select',{},...['C++','Python','HTML','CSS','JavaScript','Boshqa'].map(x=>E('option',{textContent:x}))),m=T('span');
+  app.append(E('div',{class:'card'},T('h3',`${t.title} — ${t.max_points} ball`),T('small',`${t.category} · qiyinlik ${t.difficulty}%`+(t.deadline?` · muddat ${new Date(t.deadline).toLocaleString()}`:'')),T('p',t.description),T('pre',t.statement),ta,ln,
+   E('button',{class:'p',textContent:'Yuborish',onclick:async()=>{try{await api('submissions','POST',{task_id:t.id,language:ln.value,code:ta.value});m.textContent=' Yuborildi ✔';ta.value=''}catch(x){m.textContent=' '+x.message}}}),m))})}
+async function subs(){const s=await api('submissions');const L={pending:'Kutilmoqda',under_review:'Ko\'rib chiqilmoqda',approved:'Tasdiqlandi',revision_required:'Tuzatish kerak'};
+ app.append(E('div',{class:'card'},E('table',{},E('tr',{},...['Topshiriq','Til','Holat','Ball','Izoh'].map(x=>T('th',x))),...s.map(r=>E('tr',{},T('td',r.title),T('td',r.language),T('td',L[r.status]),T('td',r.score==null?'-':`${r.score}/${r.max_points_snapshot}`),T('td',r.feedback||''))))))}
+async function lb(){const box=E('div',{class:'card'});const load=async p=>{const r=await api('leaderboard?period='+p);box.replaceChildren(E('table',{},E('tr',{},...['#','Username','Daraja','Ball','Topshiriq'].map(x=>T('th',x))),...r.map((x,i)=>E('tr',{},T('td',i+1),T('td',x.username),T('td',x.rank),T('td',x.points),T('td',x.tasks)))))};
+ app.append(E('div',{},...[['daily','Kunlik'],['weekly','Haftalik'],['all','Umumiy']].map(([p,l])=>E('button',{textContent:l,onclick:()=>load(p)}))),box);load('daily')}
+async function notes(){const n=await api('notifications');await api('notifications/read','POST');app.append(E('div',{class:'card'},...(n.length?n.map(x=>T('p',(x.is_read?'':'● ')+x.text)):[T('p','Bildirishnoma yo\'q.')])))}
+async function adm(){const st=await api('admin/stats');app.append(E('div',{class:'g'},...Object.entries(st).map(([k,v])=>E('div',{class:'card'},T('small',k),T('h2',v)))));
+ const f=E('form',{style:'max-width:none'}),e=T('div');e.className='err';
+ f.append(T('h3','Yangi topshiriq'),E('select',{name:'category'},...['C++','Python','HTML','CSS','JavaScript','Boshqa'].map(x=>E('option',{textContent:x}))),E('input',{name:'title',placeholder:'Sarlavha',required:true}),E('input',{name:'description',placeholder:'Qisqa tavsif'}),E('textarea',{name:'statement',placeholder:'Masala sharti',required:true}),
+  E('input',{name:'difficulty',type:'number',min:1,max:100,placeholder:'Qiyinlik % (= maksimal ball)',required:true}),E('input',{name:'deadline',type:'datetime-local'}),E('button',{class:'p',textContent:'Topshiriq yaratish'}),e);
+ f.onsubmit=async ev=>{ev.preventDefault();const d=Object.fromEntries(new FormData(f));if(!d.deadline)delete d.deadline;try{await api('admin/tasks','POST',d);f.reset();e.textContent='Yaratildi ✔'}catch(x){e.textContent=x.message}};
+ app.append(E('div',{class:'card'},f),T('h3','Yechimlarni tekshirish (qo\'lda)'));
+ (await api('admin/submissions')).forEach(s=>{const sc=E('input',{type:'number',min:0,max:s.max_points_snapshot,placeholder:'Ball (maks '+s.max_points_snapshot+')',value:s.score??''}),fb=E('input',{placeholder:'Izoh',value:s.feedback||''}),m=T('span');
+  const go=st=>async()=>{try{await api(`admin/submissions/${s.id}/review`,'POST',{status:st,score:sc.value,feedback:fb.value});m.textContent=' Saqlandi ✔'}catch(x){m.textContent=' '+x.message}};
+  app.append(E('div',{class:'card'},T('b',`${s.username} · ${s.title} · ${s.language} · ${s.status}`),T('pre',s.code),sc,fb,E('button',{textContent:'Ko\'rib chiqilmoqda',onclick:go('under_review')}),E('button',{class:'p',textContent:'Tasdiqlash',onclick:go('approved')}),E('button',{textContent:'Tuzatish so\'rash',onclick:go('revision_required')}),m))})}
+async function render(){app.replaceChildren();nav();if(!me)return authView();try{await({dash,tasks,subs,lb,notes,admin:adm}[tab]())}catch(x){app.append(T('p',x.message,'err'))}}
+async function boot(){try{me=await api('me')}catch{me=null}render()}boot();
+</script></body></html>
